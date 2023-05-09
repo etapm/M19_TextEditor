@@ -6,6 +6,7 @@ const { InjectManifest } = require("workbox-webpack-plugin");
 module.exports = () => {
   return {
     mode: "development",
+    devtool: "source-map",
     entry: {
       main: "./src/js/index.js",
       install: "./src/js/install.js",
@@ -13,11 +14,12 @@ module.exports = () => {
     output: {
       filename: "[name].bundle.js",
       path: path.resolve(__dirname, "dist"),
+      publicPath: "/",
     },
     plugins: [
       new HtmlWebpackPlugin({
         template: "./index.html",
-        title: "JATE",
+        title: "J.A.T.E",
       }),
       new InjectManifest({
         swSrc: "./src-sw.js",
@@ -29,13 +31,14 @@ module.exports = () => {
         description: "offline text editor",
         start_url: ".",
         publicPath: "/",
-        display: "standalone",
+        fingerprints: false,
         background_color: "#ffffff",
         theme_color: "#000000",
         icons: [
           {
             src: path.resolve("src/images/logo.png"),
             sizes: [96, 128, 192, 256, 384, 512],
+            destination: path.join("assets", "icons"),
           },
         ],
       }),
@@ -44,13 +47,16 @@ module.exports = () => {
     module: {
       rules: [
         {
-          test: /\.js$/,
+          test: /\.m?js$/,
           exclude: /node_modules/,
           use: {
             loader: "babel-loader",
             options: {
               presets: ["@babel/preset-env"],
-              plugins: ["@babel/plugin-transform-runtime"],
+              plugins: [
+                "@babel/plugin-proposal-object-rest-spread",
+                "@babel/transform-runtime",
+              ],
             },
           },
         },
